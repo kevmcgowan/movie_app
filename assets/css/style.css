@@ -42,7 +42,7 @@ h1.main-header {
   color: var(--blue);
 }
 
-input.search {
+input.search-input {
   padding: 8px 15px;
   width: 350px;
   border-radius: 10px;
