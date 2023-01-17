@@ -1,18 +1,18 @@
-var searchInput = $('.search');
-var cardWrapper = $('main');
+var searchInput = document.querySelector('.search');
+var cardWrapper = document.querySelector('main');
 
 function noMatch() {
-  cardWrapper.html('<p class="no-search">No results found.</p>');
+  cardWrapper.innerHTML = '<p class="no-search">No results found.</p>';
 }
 
 function displayMatches(matches) {
-  cardWrapper.html('');
+  cardWrapper.innerHTML = '';
 
   if (!matches) {
     noMatch();
   } else {
     for (var matchObj of matches) {
-      cardWrapper.append( `
+      cardWrapper.insertAdjacentHTML('beforeend', `
       <div class="movie-card" style="background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url(${matchObj.Poster});">
       <h3>${matchObj.Title}</h3>
         <p>Release Year${matchObj.Year}</p>
@@ -27,22 +27,33 @@ function displayMatches(matches) {
 
 function fetchMovies(event) {
   var keyCode = event.keyCode;
-  var searchText = searchInput.val().trim();
+  var searchText = searchInput.value.toLowerCase().trim();
 
   if (keyCode === 13 && searchText) {
     
-    $.get(`https://www.omdbapi.com/?apikey=a085959a&s=${searchText}`)
-      .then(function(data) {
-        displayMatches(data.Search);
-        searchInput.val('');
+    var responsePromise = fetch(`https://www.omdbapi.com/?apikey=a085959a&s=${searchText}`);
+
+    function handleResponse(responseObj) {
+      return responseObj.json();
+    }
+
+      responsePromise
+        .then(handleResponse)
+        .then(function(data) {
+          displayMatches(data.Search);
+          searchInput.value = '';
+
+          console.log(data.Search);
+      
       });
 
-   }
 
+
+  }
 }
 
 function init() {
-  searchInput.keydown(fetchMovies);
+  searchInput.addEventListener('keydown', fetchMovies);
 }
 
 init();
